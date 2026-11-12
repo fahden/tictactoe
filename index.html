@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe Game</title>
+  <style>
+    /* ======= Style Dasar Halaman ======= */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    /* ======= Style Papan Game ======= */
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      border: 2px solid #333;
+      font-size: 48px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .cell:hover {
+      background-color: #e2e2e2;
+    }
+
+    /* ======= Status dan Tombol ======= */
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    #reset-button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #reset-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+  <div id="game-board"></div>
+  <div id="status">Player X's turn</div>
+  <button id="reset-button">Restart Game</button>
+  
+  <script>
+    // ==== Inisialisasi Variabel ====
+    const board = document.getElementById("game-board");
+    const statusText = document.getElementById("status");
+    const resetButton = document.getElementById("reset-button");
+
+    let currentPlayer = "X";
+    let gameActive = true;
+    let cells = Array(9).fill("");
+
+    // ==== Pola Kemenangan ====
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // baris
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // kolom
+      [0, 4, 8], [2, 4, 6]             // diagonal
+    ];
+
+    // ==== Fungsi Membuat Papan ====
+    function createBoard() {
+      board.innerHTML = "";
+      cells.forEach((_, index) => {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = index;
+        cell.addEventListener("click", handleCellClick);
+        board.appendChild(cell);
+      });
+    }
+
+    // ==== Fungsi Saat Sel Diklik ====
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+
+      if (cells[index] !== "" || !gameActive) return;
+
+      cells[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWinner()) {
+        statusText.textContent = `Player ${currentPlayer} wins! 🎉`;
+        gameActive = false;
+        return;
+      }
+
+      if (!cells.includes("")) {
+        statusText.textContent = "It's a draw!";
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = currentPlayer === "X" ? "O" : "X";
+      statusText.textContent = `Player ${currentPlayer}'s turn`;
+    }
+
+    // ==== Fungsi Cek Kemenangan ====
+    function checkWinner() {
+      return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
+        return cells[a] === currentPlayer &&
+               cells[a] === cells[b] &&
+               cells[a] === cells[c];
+      });
+    }
+
+    // ==== Fungsi Reset Game ====
+    resetButton.addEventListener("click", () => {
+      currentPlayer = "X";
+      gameActive = true;
+      cells = Array(9).fill("");
+      statusText.textContent = `Player ${currentPlayer}'s turn`;
+      createBoard();
+    });
+
+    // ==== Jalankan Pertama Kali ====
+    createBoard();
+  </script>
+
+</body>
+</html>
